@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NexCart.API/NexCart.API.csproj" />
+    <Project Path="src/NexCart.Application/NexCart.Application.csproj" />
+    <Project Path="src/NexCart.Domain/NexCart.Domain.csproj" />
+    <Project Path="src/NexCart.Infrastructure/NexCart.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/NexCart.Application.Tests/NexCart.Application.Tests.csproj" />
+    <Project Path="tests/NexCart.Domain.Tests/NexCart.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
