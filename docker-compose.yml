@@ -1,0 +1,51 @@
+# ═══════════════════════════════════════════════════════════════
+#  NexCart — Docker Compose (Full Stack)
+# ═══════════════════════════════════════════════════════════════
+
+services:
+  # ─── .NET Backend API ───
+  nexcart-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nexcart-api
+    ports:
+      - "5119:5119"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5119
+    volumes:
+      - api-data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5119/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - nexcart-network
+
+  # ─── Next.js Frontend ───
+  nexcart-web:
+    build:
+      context: ./nexcart-web
+      dockerfile: Dockerfile
+    container_name: nexcart-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://nexcart-api:5119/api
+    depends_on:
+      nexcart-api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - nexcart-network
+
+volumes:
+  api-data:
+
+networks:
+  nexcart-network:
+    driver: bridge

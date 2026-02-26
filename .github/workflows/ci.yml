@@ -1,0 +1,86 @@
+# ═══════════════════════════════════════════════════════════════
+#  NexCart — CI/CD Pipeline (GitHub Actions)
+# ═══════════════════════════════════════════════════════════════
+
+name: NexCart CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  NODE_VERSION: "20"
+
+jobs:
+  # ─── Backend: Build & Test ───
+  backend:
+    name: 🔧 Backend Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore NexCart.slnx
+
+      - name: Build
+        run: dotnet build NexCart.slnx --no-restore -c Release
+
+      - name: Run tests
+        run: dotnet test NexCart.slnx --no-build -c Release --verbosity normal
+
+  # ─── Frontend: Build ───
+  frontend:
+    name: 🎨 Frontend Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./nexcart-web
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: nexcart-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:5119/api
+
+  # ─── Docker Build (on main only) ───
+  docker:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API image
+        run: docker build -t nexcart-api:latest .
+
+      - name: Build Web image
+        run: docker build -t nexcart-web:latest ./nexcart-web
+
+      - name: Verify compose config
+        run: docker compose config

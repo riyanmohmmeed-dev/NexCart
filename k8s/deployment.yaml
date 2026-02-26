@@ -1,0 +1,116 @@
+# ═══════════════════════════════════════════════════════════════
+#  NexCart API — Kubernetes Deployment
+# ═══════════════════════════════════════════════════════════════
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexcart-api
+  labels:
+    app: nexcart-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexcart-api
+  template:
+    metadata:
+      labels:
+        app: nexcart-api
+    spec:
+      containers:
+        - name: nexcart-api
+          image: nexcart-api:latest
+          ports:
+            - containerPort: 5119
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+            - name: ASPNETCORE_URLS
+              value: "http://+:5119"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5119
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5119
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+---
+# ═══════════════════════════════════════════════════════════════
+#  NexCart Web — Kubernetes Deployment
+# ═══════════════════════════════════════════════════════════════
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexcart-web
+  labels:
+    app: nexcart-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexcart-web
+  template:
+    metadata:
+      labels:
+        app: nexcart-web
+    spec:
+      containers:
+        - name: nexcart-web
+          image: nexcart-web:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://nexcart-api:5119/api"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+
+---
+# ═══════════════════════════════════════════════════════════════
+#  Services
+# ═══════════════════════════════════════════════════════════════
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexcart-api
+spec:
+  selector:
+    app: nexcart-api
+  ports:
+    - port: 5119
+      targetPort: 5119
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexcart-web
+spec:
+  selector:
+    app: nexcart-web
+  ports:
+    - port: 80
+      targetPort: 3000
+  type: LoadBalancer
