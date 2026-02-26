@@ -245,16 +245,6 @@ curl -X POST http://localhost:5119/api/orders \
 | **API Docs** | Scalar OpenAPI |
 | **Auth** | JWT Bearer (infrastructure ready) |
 | **Testing** | xUnit, Moq, FluentAssertions |
-
----
-
-## 🗺️ Roadmap
-
-- [x] **Phase 1** — .NET Clean Architecture Backend ✅
-- [ ] **Phase 2** — Next.js 14 Storefront & Admin Dashboard
-- [ ] **Phase 3** — Microservices with RabbitMQ (MassTransit)
-- [ ] **Phase 4** — Docker, Kubernetes & CI/CD (GitHub Actions)
-
 ---
 
 ## 📝 License
