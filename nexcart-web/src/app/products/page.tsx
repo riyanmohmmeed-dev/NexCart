@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { api } from "@/lib/api";
@@ -9,6 +9,14 @@ import { formatCurrency } from "@/lib/utils";
 import type { Product, Category } from "@/lib/types";
 
 export default function ProductsPage() {
+    return (
+        <Suspense fallback={<div className="pt-16"><div className="max-w-7xl mx-auto px-4 py-10"><div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">{[...Array(8)].map((_, i) => (<div key={i} className="glass rounded-xl h-48 animate-pulse" />))}</div></div></div>}>
+            <ProductsContent />
+        </Suspense>
+    );
+}
+
+function ProductsContent() {
     const searchParams = useSearchParams();
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
