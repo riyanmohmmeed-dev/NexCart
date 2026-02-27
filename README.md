@@ -10,6 +10,9 @@
     <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript"/>
     <img src="https://img.shields.io/badge/Architecture-Clean-00C853?style=flat-square" alt="Clean Architecture"/>
     <img src="https://img.shields.io/badge/Pattern-CQRS-FF6F00?style=flat-square" alt="CQRS"/>
+    <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker"/>
+    <img src="https://img.shields.io/badge/K8s-Ready-326CE5?style=flat-square&logo=kubernetes&logoColor=white" alt="Kubernetes"/>
+    <img src="https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white" alt="CI/CD"/>
     <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="MIT"/>
   </p>
 </p>
@@ -42,24 +45,29 @@
 | **Backend** | .NET 10, EF Core, MediatR, FluentValidation, Serilog |
 | **Frontend** | Next.js 14, TypeScript, Tailwind CSS, Zustand |
 | **Database** | SQLite (dev) |
+| **Infra** | Docker, Docker Compose, GitHub Actions CI/CD, Kubernetes |
 | **Patterns** | Clean Architecture, DDD, CQRS, Repository + Unit of Work |
 
 ---
 
 ## Quick Start
 
+### Option 1: Docker (Recommended)
+
 ```bash
-# Clone
 git clone https://github.com/riyanmohmmeed-dev/NexCart.git
 cd NexCart
+docker compose up --build
+```
 
-# Run Backend (auto-seeds 15 products, 5 categories, 2 customers)
-cd src/NexCart.API
-dotnet run --urls "http://localhost:5119"
+### Option 2: Manual
 
-# Run Frontend (in a new terminal)
-cd nexcart-web
-npm install && npm run dev
+```bash
+# Backend (auto-seeds 15 products, 5 categories, 2 customers)
+cd src/NexCart.API && dotnet run --urls "http://localhost:5119"
+
+# Frontend (new terminal)
+cd nexcart-web && npm install && npm run dev
 ```
 
 | URL | What |
@@ -67,6 +75,7 @@ npm install && npm run dev
 | `http://localhost:3000` | Storefront |
 | `http://localhost:3000/admin` | Admin Dashboard |
 | `http://localhost:5119/scalar/v1` | API Docs |
+| `http://localhost:5119/health` | Health Check |
 
 ---
 
@@ -91,6 +100,20 @@ npm install && npm run dev
 | `POST` | `/api/orders` | Place order |
 | `GET` | `/api/categories` | All categories |
 | `GET` | `/api/dashboard/stats` | Analytics summary |
+
+---
+
+## DevOps & Deployment
+
+- **Docker** — Multi-stage builds for API and frontend, orchestrated via `docker-compose.yml`
+- **CI/CD** — GitHub Actions pipeline: build → test → Docker image build on every push
+- **Kubernetes** — Production manifests in `k8s/` with liveness/readiness probes, resource limits, 2 replicas
+- **Health Checks** — `/health` endpoint for container orchestration
+
+```bash
+# Kubernetes deployment
+kubectl apply -f k8s/deployment.yaml
+```
 
 ---
 
