@@ -22,9 +22,8 @@ RUN dotnet publish src/NexCart.API/NexCart.API.csproj -c Release -o /app/publish
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
-# Non-root user for security
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-USER appuser
+# Non-root user for security (built-in to Microsoft .NET images)
+USER $APP_UID
 
 COPY --from=build /app/publish .
 
