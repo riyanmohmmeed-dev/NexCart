@@ -12,7 +12,7 @@ COPY src/NexCart.Domain/NexCart.Domain.csproj src/NexCart.Domain/
 COPY src/NexCart.Application/NexCart.Application.csproj src/NexCart.Application/
 COPY src/NexCart.Infrastructure/NexCart.Infrastructure.csproj src/NexCart.Infrastructure/
 COPY src/NexCart.API/NexCart.API.csproj src/NexCart.API/
-RUN dotnet restore NexCart.slnx
+RUN dotnet restore src/NexCart.API/NexCart.API.csproj
 
 # Copy everything and build
 COPY . .
