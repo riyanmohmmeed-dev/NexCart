@@ -23,7 +23,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
 
 # Non-root user for security
-RUN adduser --disabled-password --gecos "" appuser
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 USER appuser
 
 COPY --from=build /app/publish .
@@ -33,6 +33,6 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 EXPOSE 5119
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:5119/health || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:5119/health || exit 1
 
 ENTRYPOINT ["dotnet", "NexCart.API.dll"]
